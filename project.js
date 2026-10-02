@@ -1,4 +1,4 @@
-import { projects } from "./data/projects.js";
+import { projects, applyAppearance } from "./config.js";
 const el = (tag, cls, text) => {
   const n = document.createElement(tag);
   if (cls) n.className = cls;
@@ -19,6 +19,7 @@ if (!project) {
   root.append(a);
 } else {
   document.title = `${project.title} — Abdalla Abbas`;
+  applyAppearance(root, project.appearance);
   root.append(
     el("p", "eyebrow", `${project.status} / ${project.category}`),
     el("h1", "", project.title),
@@ -39,7 +40,7 @@ if (!project) {
     section.append(el("h2", "", s.title));
     const content = el("div");
     if (s.text) content.append(el("p", "", s.text));
-    if (s.items) {
+    if (s.items.length) {
       const list = el("ul");
       s.items.forEach((item) => list.append(el("li", "", item)));
       content.append(list);
@@ -51,6 +52,16 @@ if (!project) {
       image.loading = "lazy";
       content.append(image);
     }
+    s.media.forEach((media) => {
+      const figure = el("figure");
+      const image = el("img");
+      image.src = media.src;
+      image.alt = media.alt;
+      image.loading = "lazy";
+      figure.append(image);
+      if (media.caption) figure.append(el("figcaption", "", media.caption));
+      content.append(figure);
+    });
     section.append(content);
     sections.append(section);
   });

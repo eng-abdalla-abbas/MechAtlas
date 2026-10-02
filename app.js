@@ -1,5 +1,10 @@
-import { skills, connections } from "./data/skills.js";
-import { projects } from "./data/projects.js";
+import {
+  skills,
+  connections,
+  projects,
+  projectsForSkill,
+  applyAppearance,
+} from "./config.js";
 const NS = "http://www.w3.org/2000/svg";
 const el = (tag, cls, text) => {
   const n = document.createElement(tag);
@@ -31,6 +36,13 @@ for (let i = 0; i < 5; i++) {
   flow.append(contour);
 }
 const field = document.querySelector("#project-field");
+const plannedCount = projects.filter(
+  (project) => project.status === "Planned",
+).length;
+const documentedCount = projects.length - plannedCount;
+document.querySelector("#projects .section-heading > p").textContent =
+  `${documentedCount} documented ${documentedCount === 1 ? "project" : "projects"}. ${plannedCount} planned ${plannedCount === 1 ? "direction" : "directions"}.`;
+
 projects.forEach((p) => {
   const a = el(
     "a",
@@ -38,6 +50,7 @@ projects.forEach((p) => {
   );
   a.href = `project.html?id=${encodeURIComponent(p.id)}`;
   a.dataset.project = p.id;
+  applyAppearance(a, p.appearance);
   a.setAttribute("aria-label", `${p.title} — ${p.status}. View project`);
   if (p.image) {
     const img = el("img");
@@ -69,53 +82,76 @@ connections.forEach(([a, b]) => {
     end = skills.find((s) => s.id === b);
   if (!start || !end) return;
   const line = document.createElementNS(NS, "line");
-  line.setAttribute("x1", `${start.x}%`);
-  line.setAttribute("y1", `${start.y}%`);
-  line.setAttribute("x2", `${end.x}%`);
-  line.setAttribute("y2", `${end.y}%`);
+
   line.dataset.nodes = `${a} ${b}`;
   lines.append(line);
 });
 skills.forEach((s) => {
-  const b = el("button", "skill-node", s.name);
+  const b = el("button", "skill-node");
+  b.append(el("span", "skill-name", s.label));
+  b.setAttribute("aria-label", `${s.name} — ${s.status}`);
+  b.dataset.emphasis = s.emphasis;
+  applyAppearance(b, s.appearance);
   b.type = "button";
   b.dataset.id = s.id;
   b.dataset.stage = s.status.toLowerCase();
-  b.style.left = `${s.x}%`;
-  b.style.top = `${s.y}%`;
+
   b.setAttribute("aria-pressed", "false");
   b.setAttribute("aria-controls", "skill-detail");
   b.append(el("small", "", s.status));
   b.addEventListener("click", () => select(s));
   nodes.append(b);
 });
-// The mobile map keeps its circles and connections in a tall staggered layout.
-const mobileMap = window.matchMedia("(max-width: 760px)");
+// Build the legend from actual labels; stage and cosmetic theme are independent.
+const legend = document.querySelector(".skill-legend");
+legend.replaceChildren(
+  ...[...new Set(skills.map((s) => s.status))].map((status) =>
+    el("li", "", status),
+  ),
+);
+const map = document.querySelector(".skill-map");
+let previousWidth = -1;
 function positionMap() {
-  const positions = new Map(
-    skills.map((skill, index) => [
-      skill.id,
-      mobileMap.matches
-        ? { x: index % 2 ? 75 : 25, y: 7 + index * 10.5 }
-        : skill,
-    ]),
-  );
-  nodes.querySelectorAll("button").forEach((button) => {
-    const position = positions.get(button.dataset.id);
-    button.style.left = `${position.x}%`;
-    button.style.top = `${position.y}%`;
+  const width = map.clientWidth;
+  if (width === previousWidth) return;
+  previousWidth = width;
+  const mobile = window.matchMedia("(max-width: 760px)").matches;
+  const columns = mobile
+    ? 2
+    : Math.max(1, Math.min(3, Math.floor(width / 190)));
+  const positions = new Map();
+  const buttons = [...nodes.querySelectorAll("button")];
+  buttons.forEach((button, index) => {
+    const skill = skills[index];
+    const diameter = mobile
+      ? skill.emphasis === "strong"
+        ? 136
+        : 128
+      : skill.emphasis === "strong"
+        ? 160
+        : 136;
+    button.style.width = `${diameter}px`;
+    button.style.height = `${diameter}px`;
+    const x = (width / columns) * ((index % columns) + 0.5);
+    const y = mobile
+      ? 85 + index * 108
+      : 100 + Math.floor(index / columns) * 195;
+    positions.set(skill.id, { x, y });
+    button.style.left = `${x}px`;
+    button.style.top = `${y}px`;
   });
+  map.style.height = `${skills.length ? (mobile ? 170 + (skills.length - 1) * 108 : 200 + (Math.ceil(skills.length / columns) - 1) * 195) : 0}px`;
   lines.querySelectorAll("line").forEach((line) => {
-    const [startId, endId] = line.dataset.nodes.split(" ");
-    const start = positions.get(startId),
-      end = positions.get(endId);
-    line.setAttribute("x1", `${start.x}%`);
-    line.setAttribute("y1", `${start.y}%`);
-    line.setAttribute("x2", `${end.x}%`);
-    line.setAttribute("y2", `${end.y}%`);
+    const [a, b] = line.dataset.nodes.split(" "),
+      start = positions.get(a),
+      end = positions.get(b);
+    line.setAttribute("x1", start.x);
+    line.setAttribute("y1", start.y);
+    line.setAttribute("x2", end.x);
+    line.setAttribute("y2", end.y);
   });
 }
-mobileMap.addEventListener("change", positionMap);
+new ResizeObserver(positionMap).observe(map);
 positionMap();
 function select(s) {
   nodes
@@ -128,25 +164,27 @@ function select(s) {
     .forEach((l) =>
       l.classList.toggle("active", l.dataset.nodes.split(" ").includes(s.id)),
     );
+  applyAppearance(detail, s.appearance);
   detail.replaceChildren(
     el("span", "badge", `${s.role} / ${s.status}`),
     el("h3", "", s.name),
-    el("p", "", s.description),
-    el("h4", "", "Current focus"),
-    el("p", "", s.focus),
+    ...(s.description ? [el("p", "", s.description)] : []),
+    ...(s.focus ? [el("h4", "", "Current focus"), el("p", "", s.focus)] : []),
   );
   field.querySelectorAll("a").forEach((a) => {
-    const related = s.projects.includes(a.dataset.project);
+    const related = projectsForSkill(s.id).some(
+      (p) => p.id === a.dataset.project,
+    );
     a.classList.toggle("is-related", related);
   });
-  const names = projects
-    .filter((p) => s.projects.includes(p.id))
+  const names = projectsForSkill(s.id)
     .map((p) => `${p.title}${p.status === "Planned" ? " (planned)" : ""}`)
     .join(", ");
   document.querySelector("#project-filter-status").textContent =
     `Connected to ${s.name}: ${names || "No documented project yet"}. All projects remain available.`;
 }
 function reset() {
+  applyAppearance(detail, {});
   nodes
     .querySelectorAll("button")
     .forEach((b) => b.setAttribute("aria-pressed", "false"));

@@ -13,19 +13,40 @@ The repository is `eng-abdalla-abbas/MechAtlas`. GitHub Pages serves the site fr
 
 Relative URLs support the repository subpath. The site needs no build system. For a fresh setup, choose **Settings → Pages → Deploy from a branch → main → / (root)**. `.nojekyll` bypasses Jekyll.
 
-## Add a project (about 5 minutes)
+## Edit content in two files
 
-1. Add a real screenshot or visual to `assets/`.
-2. Copy an object in `data/projects.js`. Give it a unique `id`, title, category, status, summary, and tags.
-3. Choose `size`: `featured`, `medium`, or `small`. Add `image` and descriptive `imageAlt`; planned items can use decorative `visual: 'flow'` or `'grid'`.
-4. Add supported content to `sections` as `{title, text}` or `{title, items: [...]}`. Optional `image` and `imageAlt` show evidence below a section. Section titles can include Overview, Problem, What I Built, Approach, Challenges, Results, What I Learned, and Technical Details. Omit anything you cannot substantiate.
-5. Add `links: [{label, url}]` if available. Add its id to relevant skills' `projects` arrays. Refresh the preview.
+The full configuration reference, valid values, defaults, and copyable examples are in the **opening JavaScript block comment** of each file:
 
-The homepage and `project.html?id=your-id` render from the same object; no HTML edits. The bubbles use CSS Grid flow with different size limits. New entries automatically occupy the next available grid position; mobile uses a single column. The legacy `position` values in existing project data are no longer used.
+- `data/skills.js`: skills and undirected skill-to-skill connections.
+- `data/projects.js`: projects, sections, media, resource links, and the sole project-to-skill membership list (`skills`).
 
-## Update a skill (about 2 minutes)
+### Add a project (about 5 minutes)
 
-Edit `data/skills.js`: name, role, status, description, focus, related project ids. Add new nodes with unique ids and x/y percentage positions for the desktop diagram. Mobile preserves circular nodes and their SVG connections in a tall, staggered map to keep labels readable. The `status` value also selects the stage color; keep the visible legend in `index.html` in sync if adding a new stage. Add pairs of ids to `connections` to draw lines. Skill nodes are native keyboard-operable buttons. Select a node to highlight related projects; all links stay available. Reset restores the overview.
+Copy the documented example into `projects`. Set its id/title, honest status, size, summary, sections, and optional links. List its related skill ids in that project's `skills` array. The homepage, detail URL, and skill highlighting update together. Never add project ids to skill objects.
+
+Use an existing image, an external image URL, or a decorative fallback through the data file. A new local screenshot additionally requires adding that actual image to `assets/`. No HTML, CSS, rendering code, manual coordinates, or route edits are needed.
+
+### Add a skill or connection (about 2 minutes)
+
+Copy the documented skill example into `skills`. Set its id, name, optional short `label`, role, honest `status`, description, and focus. Optional `order` controls sequence; circles and SVG lines automatically arrange themselves and the map grows vertically with the number of nodes. Mobile retains the staggered circular map. New status labels automatically appear in the legend.
+
+Add a pair such as `["new-method", "python"]` to `connections` for a skill-to-skill line. Add the new skill id to a project's `skills` array to associate that project. Unknown ids and duplicate pairs/memberships are ignored.
+
+### Customize a skill or project
+
+Every item accepts the same independent appearance object:
+
+```js
+appearance: {
+  theme: "thermal",     // green | blue | thermal | white; default blue
+  intensity: "low",     // low | medium | high; default medium
+  contrast: "high",     // standard | high; default standard
+}
+```
+
+Intensity changes border strength and surface tint, never text opacity. Both contrast presets retain readable light text on dark surfaces; high uses white text and a darker surface. White is an accent theme, not a white page. Appearance is independent of the status label and does not imply proficiency. Skill `emphasis` controls circle size/weight; project `size` controls bubble size. Project appearance also carries into its detail page.
+
+Missing optional values use defaults; invalid appearance enums fall back safely. Keep valid JavaScript syntax and concise node/bubble labels. Full text remains available in the detail panel/page. Unsafe URL protocols are ignored. Complete field-by-field behavior is documented at the head of both data files.
 
 ## Content and evidence
 
@@ -39,13 +60,14 @@ Read on 2026-09-29. MeshStudy is an early FreeCAD workbench using Python, static
 
 ## Accessibility and maintenance
 
-Semantic links and buttons, visible focus, skip links, live selection descriptions, informative image alt text, reduced-motion rules, no hover-only content, no autoplay, and responsive layouts. Cross-document view transitions are progressive enhancement; unsupported browsers use normal navigation. The font stack uses readable local system sans-serif fonts (Inter when locally installed, system UI, Segoe UI, then sans-serif). No fonts are downloaded. Body text is 16–18px and skill names/status labels are at least 12px. Project image captions use opaque backdrops. No third-party fonts, analytics, trackers, or network dependencies are required to render the site. The only external URLs are deliberate project/contact links.
+Semantic links and buttons, visible focus, skip links, live selection descriptions, informative image alt text, reduced-motion rules, no hover-only content, no autoplay, and responsive layouts. Cross-document view transitions are progressive enhancement; unsupported browsers use normal navigation. The font stack uses readable local system sans-serif fonts (Inter when locally installed, system UI, Segoe UI, then sans-serif). No fonts are downloaded. Body text is 16–18px and skill names/status labels are at least 12px. Project image captions use opaque backdrops. No third-party fonts, analytics, trackers, or network dependencies are required to render the site. The supplied content only uses deliberate project/contact links; adding an external image URL will also request that image.
 
 ## Files
 
 - `index.html`: homepage shell
 - `project.html`: reusable detail shell
 - `app.js`, `project.js`: rendering and interactions
+- `config.js`: shared normalization, appearance presets, and derived relationships
 - `data/skills.js`, `data/projects.js`: editable content
 - `styles.css`: visual system and responsive layouts
 - `assets/`: local visuals

@@ -342,29 +342,7 @@ h2 {
   line-height: 1.4;
   color: var(--stage);
 }
-.skill-node[data-id="python"] {
-  width: 160px;
-  height: 160px;
-  background: #244139;
-  border: 2px solid var(--current);
-  font-size: 23px;
-}
-.skill-node[data-id="fea"] {
-  width: 150px;
-  height: 150px;
-  background: #1c302d;
-  border: 2px solid #8db9a7;
-  font-size: 21px;
-}
-.skill-node[data-id="cfd"] {
-  font-size: 21px;
-}
-.skill-node[data-id="openfoam"] {
-  border-color: #64757e;
-}
-.skill-node[data-id="heat"] {
-  border-style: dashed;
-}
+
 .skill-node:hover,
 .skill-node[aria-pressed="true"] {
   background: #2c414b;
@@ -751,23 +729,7 @@ footer {
   .skill-map {
     height: 990px;
   }
-  .skill-node,
-  .skill-node[data-id="cfd"] {
-    width: 128px;
-    height: 128px;
-    font-size: 15px;
-    padding: 12px;
-  }
-  .skill-node[data-id="python"] {
-    width: 136px;
-    height: 136px;
-    font-size: 21px;
-  }
-  .skill-node[data-id="fea"] {
-    width: 132px;
-    height: 132px;
-    font-size: 21px;
-  }
+
   .skill-node small {
     font-size: 12px;
   }
@@ -886,4 +848,114 @@ footer {
   .project-bubble:hover {
     transform: none;
   }
+}
+/* Per-item settings come from the data modules, not status or item ids. */
+.skill-map .skill-node {
+  background: var(--item-surface);
+  color: var(--item-text);
+  border: 1px solid var(--item-border);
+  font-size: 15px;
+  padding: 12px;
+}
+.skill-map .skill-node[data-emphasis="strong"] {
+  border-width: 2px;
+  font-size: 21px;
+}
+.skill-map .skill-node[data-emphasis="quiet"] {
+  border-width: 1px;
+}
+.skill-map .skill-node small {
+  color: var(--item-accent);
+  font-size: 12px;
+}
+.skill-map .skill-node:hover,
+.skill-map .skill-node[aria-pressed="true"] {
+  outline: 2px solid #f2d8a4;
+  outline-offset: 4px;
+}
+.skill-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.skill-legend li::before {
+  background: var(--muted);
+}
+.skill-detail .badge,
+.skill-detail h4 {
+  color: var(--item-accent, var(--accent));
+}
+.project-field .project-bubble {
+  color: var(--item-text);
+  border-color: var(--item-border);
+  background: var(--item-surface);
+}
+.project-field .project-bubble.is-related {
+  border-color: var(--item-accent);
+}
+.project-field .bubble-copy {
+  background: var(--item-surface);
+}
+.project-field .badge,
+.project-field .planned-label,
+.project-field .bubble-arrow {
+  color: var(--item-accent);
+}
+.project-field .category {
+  color: var(--item-muted);
+}
+.project-field .project-bubble h3,
+.project-field .summary {
+  overflow-wrap: anywhere;
+}
+.project-detail {
+  color: var(--item-text, var(--fg));
+}
+.project-detail .eyebrow,
+.project-detail .text-link {
+  color: var(--item-accent, var(--accent));
+}
+.project-detail .tags span {
+  border-color: var(--item-border, var(--line));
+  background: var(--item-surface, var(--surface));
+  color: var(--item-muted, var(--muted));
+}
+.project-detail figure {
+  margin: 20px 0;
+}
+.project-detail figcaption {
+  color: var(--item-muted, var(--muted));
+  font-size: 14px;
+}
+.project-field .project-bubble {
+  min-width: 0;
+  aspect-ratio: 1;
+}
+.project-field .project-bubble h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.project-field .summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.project-field .category {
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.project-detail {
+  background: var(--item-surface, var(--bg));
+}
+.project-detail .project-subtitle,
+.project-detail .project-section p,
+.project-detail .project-section li {
+  color: var(--item-muted, var(--muted));
 }

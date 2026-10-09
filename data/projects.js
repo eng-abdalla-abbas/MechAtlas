@@ -1,86 +1,114 @@
 /**
- * PROJECTS + PROJECT→SKILL MEMBERSHIPS — the only project content source.
- * Add/edit objects inside exported `projects`; homepage and detail pages update.
- * No HTML/CSS edits or routes are needed: project.html?id=your-id is automatic.
- * Skills and skill→skill graph edges are configured in data/skills.js.
- * All strings are plain text, never injected HTML. Keep valid JavaScript syntax.
- *
- * Every project field (only id is required):
- * - id: unique lowercase slug, /^[a-z0-9][a-z0-9-]*$/; no default. Missing,
- *   invalid, or duplicate ids are skipped (first valid duplicate wins).
- * - title: string; default id. Use a concise title for the bubble.
- * - category: string; default "" (omitted).
- * - status: string; default "Planned". Exact "Planned" gets dashed styling;
- *   other honest labels (e.g. "Working project") are displayed unchanged.
- * - summary: string; default "". Brief bubble/detail introduction.
- * - size: "featured" | "medium" | "small"; default "medium". Controls the
- *   maximum bubble diameter, not a fixed position. New bubbles flow into the
- *   next available space at every viewport. Keep copy concise; the bubble shows
- *   at most two title lines and three summary lines. Full text is in details.
- * - appearance: optional object with independent, bounded visual settings:
- *     theme: "green" | "blue" | "thermal" | "white"; default "blue".
- *     intensity: "low" | "medium" | "high"; default "medium".
- *     contrast: "standard" | "high"; default "standard".
- *   Thermal is the warm hero accent. Intensity adjusts borders and surface tint;
- *   text is never faded. Both contrast presets use readable light-on-dark text;
- *   high makes text white and darkens the surface. White means a white accent.
- *   These settings apply to the bubble AND detail page; they imply no expertise.
- * - skills: array of skill ids; default []. THE authoritative project/skill
- *   relationship: skill selection highlights every project listing its id here.
- *   Unknown ids/non-string values are ignored; duplicates are removed.
- * - tags: string array; default []. Free-form technology/topic labels in details.
- * - image: URL string; default "". Optional cover shown in bubble and detail.
- * - imageAlt: string; default ""; always write useful alt text for a real image.
- *   Bubble image is decorative because the enclosing link has a complete name.
- * - visual: "flow" | "grid" | "none"; default "grid". Decorative fallback
- *   when image is empty, not simulated results. Ignored if image is supplied.
- * - sections: array of flexible content objects in display order; default [].
- *   Each section accepts ALL of these fields:
- *     title: string; default "Notes". Any heading is supported (Overview,
- *       Problem, Approach, Results, What I Learned, Technical Details, etc.).
- *     text: string; default "". Optional paragraph.
- *     items: string array; default []. Optional bullet list.
- *     image: optional image URL; default "". Single image shortcut.
- *     imageAlt: string; default "". Alt text for that single image.
- *     media: array; default []. Each media object has:
- *       src: image URL (required; invalid/missing src skips that media object),
- *       alt: string (default ""), caption: string (default "", omitted).
- *       Only images are supported; no video/embed/type fields are consumed.
- *   Empty sections are omitted. Do not add unsupported claims to fill headings.
- * - links: array; default []. Each {label, url} becomes a detail link.
- *   label defaults to "View resource"; missing/invalid url skips the link.
- * - No other fields are consumed. Old `position` values are no longer used.
- *
- * URL rules for image/src/url: relative paths (e.g. assets/example.png), absolute
- * HTTPS/HTTP, or mailto links (links only). Invalid/unsafe protocols (javascript:, data:, etc.)
- * are omitted. Images accept relative paths or HTTP(S); mailto images are omitted. You can
- * reuse existing assets or external image URLs through these two data files;
- * a brand-new local image also needs its actual file added under assets/.
- * Optional fields with wrong types use their defaults; malformed array entries
- * are ignored. Appearance values outside the listed enums use their defaults.
- *
- * COPYABLE PROJECT (append INSIDE projects; use real facts when available):
- * { id: "new-study", title: "New Study", category: "Future direction",
- *   status: "Planned", size: "medium", summary: "A planned investigation.",
- *   appearance: { theme: "thermal", intensity: "low", contrast: "high" },
- *   skills: ["python", "new-method"], tags: ["Python"], visual: "flow",
- *   sections: [{ title: "Overview", text: "Scope is still being defined." }],
- *   links: [] },
- *
- * OPTIONAL MEDIA/LINK EXAMPLES (use real accessible URLs):
- * sections: [{ title: "Evidence", items: ["One supported observation."],
- *   media: [{ src: "assets/meshstudy-chart.png", alt: "Describe the chart",
- *     caption: "Explain the source and limits of this image." }] }],
- * links: [{ label: "Source", url: "https://github.com/owner/repository" }]
+ * Edit all project content here; skills/connections live in data/skills.js.
+ * size: number 0–10. 0 hides the homepage bubble but keeps its detail URL.
+ * Larger numbers make larger bubbles and sort first on mobile. The highest
+ * visible project is centered on desktop; ties preserve array order.
+ * appearance: { theme: "green"|"blue"|"thermal"|"white", intensity: 0–10,
+ *   contrast: "standard"|"high" }. Intensity affects tint/border, never text.
+ * Missing size/intensity default to 5; finite values are clamped to 0–10.
+ * Assets: put each project's files in assets/ProjectName/ and reference paths
+ * here (forward slashes). Adding a project needs only this entry + its files.
+ * id: unique lowercase slug; route is project.html?id=your-id.
+ * title/category/status/summary/imageAlt: plain text. image: cover path.
+ * skills: skill ids; tags: text labels; visual: "flow"|"grid"|"none" fallback.
+ * sections: [{title, text, items: [text], image, imageAlt,
+ *   media: [{src, alt, caption}]}]. All section fields are optional.
+ * links: [{label, url}]. URLs accept relative paths or HTTP(S); links also mailto.
+ * Only id is required; invalid ids/duplicates are skipped. Status defaults to
+ * "Planned"; optional text/arrays default empty. Unknown themes use blue.
  */
 export const projects = [
+{
+  "id": "perfume-wooden-box",
+  "title": "Perfume Wooden Box",
+  "category": "Reverse engineering \u00b7 CAD",
+  "status": "Documented project",
+  "size": 8,
+  "appearance": {
+    "theme": "thermal",
+    "intensity": 7,
+    "contrast": "standard"
+  },
+  "image": "assets/PerfumeWoodenBox/reference-closed.jpg",
+  "imageAlt": "Original wooden perfume box with interlocking panels and closed lid",
+  "summary": "From a physical perfume box to a CAD assembly and dimensioned parts.",
+  "skills": [
+    "freecad"
+  ],
+  "tags": [
+    "Reverse engineering",
+    "CAD assembly",
+    "Technical drawings"
+  ],
+  "sections": [
+    {
+      "title": "Overview",
+      "text": "Reverse engineering a wooden perfume box: reconstructing its panels, lid and internal bottle holder as a CAD assembly, with drawings documenting the parts and assembly."
+    },
+    {
+      "title": "Physical reference",
+      "text": "The original box provides the reference for the enclosure, panel joints and lid arrangement.",
+      "media": [
+        {
+          "src": "assets/PerfumeWoodenBox/reference-open.jpg",
+          "alt": "Physical perfume box with lid open"
+        }
+      ]
+    },
+    {
+      "title": "Assembly reconstruction",
+      "text": "The CAD views document the closed and open configurations, with separate panels and internal inserts.",
+      "media": [
+        {
+          "src": "assets/PerfumeWoodenBox/cad-closed.png",
+          "alt": "Closed CAD assembly"
+        },
+        {
+          "src": "assets/PerfumeWoodenBox/cad-open.png",
+          "alt": "Open CAD assembly with bottle-shaped insert"
+        },
+        {
+          "src": "assets/PerfumeWoodenBox/assembly-drawing.jpg",
+          "alt": "Closed, exploded and open assembly drawing"
+        }
+      ]
+    },
+    {
+      "title": "Part geometry",
+      "text": "The dimensioned drawing records panel profiles, slots, thicknesses and bottle-holder cutouts.",
+      "media": [
+        {
+          "src": "assets/PerfumeWoodenBox/dimensions.jpg",
+          "alt": "Dimensioned panel and insert drawings"
+        }
+      ]
+    },
+    {
+      "title": "Model views",
+      "media": [
+        {
+          "src": "assets/PerfumeWoodenBox/cad-detail-1.png",
+          "alt": "Additional CAD model view 1"
+        },
+        {
+          "src": "assets/PerfumeWoodenBox/cad-detail-2.png",
+          "alt": "Additional CAD model view 2"
+        },
+        {
+          "src": "assets/PerfumeWoodenBox/cad-detail-3.png",
+          "alt": "Additional CAD model view 3"
+        }
+      ]
+    }
+  ]
+},
   {
     id: "meshstudy",
     title: "MeshStudy",
     category: "FreeCAD workbench · Python",
     status: "Working project",
-    size: "featured",
-    image: "assets/meshstudy-setup.png",
+    size: 10,
+    image: "assets/MeshStudy/meshstudy-setup.png",
     imageAlt:
       "MeshStudy repository screenshot showing a configured FEM model in FreeCAD",
     summary: "A clearer path through mesh refinement.",
@@ -105,7 +133,7 @@ export const projects = [
       {
         title: "Results",
         text: "The repository demonstrates study configuration, automatic execution, tabulated output, convergence charts, and result objects. The screenshot below is an example from the project documentation; it is not a general accuracy or performance benchmark.",
-        image: "assets/meshstudy-chart.png",
+        image: "assets/MeshStudy/meshstudy-chart.png",
         imageAlt:
           "Example MeshStudy convergence chart from the project documentation",
       },
@@ -134,7 +162,7 @@ export const projects = [
     skills: ["python", "numerical", "validation", "fea", "freecad"],
     appearance: {
       theme: "green",
-      intensity: "medium",
+      intensity: 5,
       contrast: "standard",
     },
   },
@@ -143,7 +171,7 @@ export const projects = [
     title: "CFD Study",
     category: "Future direction",
     status: "Planned",
-    size: "medium",
+    size: 5,
     visual: "flow",
     summary: "From governing equations to a documented flow study.",
     tags: ["CFD", "Fluid Mechanics", "OpenFOAM"],
@@ -156,7 +184,7 @@ export const projects = [
     skills: ["cfd", "fluids", "openfoam", "numerical", "validation"],
     appearance: {
       theme: "blue",
-      intensity: "low",
+      intensity: 2,
       contrast: "standard",
     },
   },
@@ -165,7 +193,7 @@ export const projects = [
     title: "Engineering Tool",
     category: "Python · Future direction",
     status: "Planned",
-    size: "small",
+    size: 3,
     visual: "grid",
     summary: "A future space for a focused engineering utility.",
     tags: ["Python"],
@@ -178,7 +206,7 @@ export const projects = [
     skills: ["python"],
     appearance: {
       theme: "thermal",
-      intensity: "low",
+      intensity: 2,
       contrast: "standard",
     },
   },

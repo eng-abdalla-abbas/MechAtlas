@@ -43,13 +43,16 @@ const documentedCount = projects.length - plannedCount;
 document.querySelector("#projects .section-heading > p").textContent =
   `${documentedCount} documented ${documentedCount === 1 ? "project" : "projects"}. ${plannedCount} planned ${plannedCount === 1 ? "direction" : "directions"}.`;
 
-projects.forEach((p) => {
+const visibleProjects = projects.filter((p) => p.size > 0).sort((a, b) => b.size - a.size);
+visibleProjects.forEach((p, index) => {
   const a = el(
     "a",
-    `project-bubble ${p.size} ${p.status === "Planned" ? "planned" : ""}`,
+    `project-bubble ${p.status === "Planned" ? "planned" : ""}`,
   );
   a.href = `project.html?id=${encodeURIComponent(p.id)}`;
   a.dataset.project = p.id;
+  a.style.setProperty("--bubble-width", `${260 + p.size * 25}px`);
+  a.classList.toggle("primary-project", index === 0);
   applyAppearance(a, p.appearance);
   a.setAttribute("aria-label", `${p.title} — ${p.status}. View project`);
   if (p.image) {
@@ -90,7 +93,7 @@ skills.forEach((s) => {
   const b = el("button", "skill-node");
   b.append(el("span", "skill-name", s.label));
   b.setAttribute("aria-label", `${s.name} — ${s.status}`);
-  b.dataset.emphasis = s.emphasis;
+  b.style.borderWidth = `${1 + s.rank / 5}px`;
   applyAppearance(b, s.appearance);
   b.type = "button";
   b.dataset.id = s.id;
@@ -123,13 +126,7 @@ function positionMap() {
   const buttons = [...nodes.querySelectorAll("button")];
   buttons.forEach((button, index) => {
     const skill = skills[index];
-    const diameter = mobile
-      ? skill.emphasis === "strong"
-        ? 136
-        : 128
-      : skill.emphasis === "strong"
-        ? 160
-        : 136;
+    const diameter = (mobile ? 112 : 124) + skill.rank * (mobile ? 2.4 : 3.6);
     button.style.width = `${diameter}px`;
     button.style.height = `${diameter}px`;
     const x = (width / columns) * ((index % columns) + 0.5);

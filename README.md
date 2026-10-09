@@ -39,12 +39,12 @@ Every item accepts the same independent appearance object:
 ```js
 appearance: {
   theme: "thermal",     // green | blue | thermal | white; default blue
-  intensity: "low",     // low | medium | high; default medium
+  intensity: 5,         // number 0–10; default 5
   contrast: "high",     // standard | high; default standard
 }
 ```
 
-Intensity changes border strength and surface tint, never text opacity. Both contrast presets retain readable light text on dark surfaces; high uses white text and a darker surface. White is an accent theme, not a white page. Appearance is independent of the status label and does not imply proficiency. Skill `emphasis` controls circle size/weight; project `size` controls bubble size. Project appearance also carries into its detail page.
+Intensity changes border strength and surface tint, never text opacity. Both contrast presets retain readable light text on dark surfaces; high uses white text and a darker surface. White is an accent theme, not a white page. Appearance is independent of the status label and does not imply proficiency. Skill `rank` (0–10) controls circle size/weight and descending order; optional `order` overrides ordering. Project `size` (0–10) controls bubble size and priority: 0 hides it from the homepage, highest values appear first on mobile and the leading project is centered on desktop. Ties keep array order. Project appearance also carries into its detail page.
 
 Missing optional values use defaults; invalid appearance enums fall back safely. Keep valid JavaScript syntax and concise node/bubble labels. Full text remains available in the detail panel/page. Unsafe URL protocols are ignored. Complete field-by-field behavior is documented at the head of both data files.
 
@@ -53,8 +53,8 @@ Missing optional values use defaults; invalid appearance enums fall back safely.
 MeshStudy facts and screenshots come from its public README:
 https://github.com/eng-abdalla-abbas/MeshStudy/blob/main/README.md
 
-- `assets/meshstudy-setup.png`: `Resources/Media/fem_setup.png`
-- `assets/meshstudy-chart.png`: `Resources/Media/results_chart.png`
+- `assets/MeshStudy/meshstudy-setup.png`: `Resources/Media/fem_setup.png`
+- `assets/MeshStudy/meshstudy-chart.png`: `Resources/Media/results_chart.png`
 
 Read on 2026-09-29. MeshStudy is an early FreeCAD workbench using Python, static structural analysis, Gmsh meshing, uniform h refinement, and stress/displacement quantities of interest. No numerical accuracy, speedup, or validation claims have been added. Screenshot charts are documentation examples. CFD Study and Engineering Tool are explicitly planned placeholders. Hero streamlines, warm contours, and planned bubble motifs are decorative, not simulation outputs. CFD is the primary direction; heat transfer is a secondary interest with no claimed completed study. Python has the strongest visual emphasis as a current tool, followed by applied FEA; these are not expert ratings. OpenFOAM remains Exploring. The student stage and learning direction follow the supplied brief; learning labels are editorial descriptions, not certifications.
 
@@ -73,3 +73,7 @@ Semantic links and buttons, visible focus, skip links, live selection descriptio
 - `assets/`: local visuals
 
 See `VERIFICATION.md` for the local checks and deployment limitations.
+
+### Perfume wooden box
+
+The reverse-engineering project uses nine user-supplied photographs, CAD views and drawings in `assets/PerfumeWoodenBox/`. Each project keeps its assets in a separate folder. Content and visual controls remain in `data/projects.js` and `data/skills.js`, with configuration instructions at the top.

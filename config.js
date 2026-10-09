@@ -25,11 +25,12 @@ function safeImage(value) {
   const url = safeUrl(value);
   return url && !url.toLowerCase().startsWith("mailto:") ? url : "";
 }
+export const scale = (value, fallback = 5) => Number.isFinite(value) ? Math.max(0, Math.min(10, value)) : fallback;
 export function appearance(value) {
   const data = object(value);
   return {
     theme: choice(data.theme, ["green", "blue", "thermal", "white"], "blue"),
-    intensity: choice(data.intensity, ["low", "medium", "high"], "medium"),
+    intensity: scale(data.intensity),
     contrast: choice(data.contrast, ["standard", "high"], "standard"),
   };
 }
@@ -42,7 +43,7 @@ const palettes = {
 export function applyAppearance(node, value) {
   const visual = appearance(value),
     rgb = palettes[visual.theme];
-  const level = { low: 0.06, medium: 0.13, high: 0.23 }[visual.intensity];
+  const level = 0.025 + visual.intensity * 0.0225;
   const mix = (ratio) =>
     `rgb(${rgb.map((v, i) => Math.round([16, 25, 29][i] * (1 - ratio) + v * ratio)).join(" ")})`;
   node.dataset.theme = visual.theme;
@@ -51,7 +52,7 @@ export function applyAppearance(node, value) {
   node.style.setProperty("--item-accent", `rgb(${rgb.join(" ")})`);
   node.style.setProperty(
     "--item-border",
-    mix({ low: 0.5, medium: 0.65, high: 0.9 }[visual.intensity]),
+    mix(0.3 + visual.intensity * 0.065),
   );
   node.style.setProperty(
     "--item-surface",
@@ -84,11 +85,11 @@ export const skills = validItems(rawSkills)
     status: text(value.status, "Exploring"),
     description: text(value.description),
     focus: text(value.focus),
-    emphasis: choice(value.emphasis, ["quiet", "normal", "strong"], "normal"),
-    order: Number.isFinite(value.order) ? value.order : index,
+    rank: scale(value.rank),
+    order: Number.isFinite(value.order) ? value.order : null,
     appearance: appearance(value.appearance),
   }))
-  .sort((a, b) => a.order - b.order);
+  .sort((a, b) => (a.order ?? 10 - a.rank) - (b.order ?? 10 - b.rank));
 const skillIds = new Set(skills.map((s) => s.id));
 const edgeIds = new Set();
 export const connections = list(rawConnections).filter((pair) => {
@@ -114,7 +115,7 @@ export const projects = validItems(rawProjects).map((value) => ({
   title: text(value.title, value.id),
   category: text(value.category),
   status: text(value.status, "Planned"),
-  size: choice(value.size, ["featured", "medium", "small"], "medium"),
+  size: scale(value.size),
   summary: text(value.summary),
   appearance: appearance(value.appearance),
   skills: unique(list(value.skills).filter((id) => skillIds.has(id))),

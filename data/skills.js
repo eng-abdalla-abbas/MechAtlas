@@ -72,7 +72,7 @@ export const skills = [
     rank: 10,
     appearance: {
       theme: "green",
-      intensity: 10,
+      intensity: 8,
       contrast: "standard",
     },
   },
@@ -104,7 +104,7 @@ export const skills = [
     rank: 5,
     appearance: {
       theme: "blue",
-      intensity: 2,
+      intensity: 4,
       contrast: "standard",
     },
   },
@@ -120,7 +120,7 @@ export const skills = [
     rank: 8,
     appearance: {
       theme: "green",
-      intensity: 5,
+      intensity: 6,
       contrast: "standard",
     },
   },
@@ -152,7 +152,7 @@ export const skills = [
     rank: 5,
     appearance: {
       theme: "green",
-      intensity: 2,
+      intensity: 7,
       contrast: "standard",
     },
   },
